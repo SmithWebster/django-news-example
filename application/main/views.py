@@ -86,7 +86,6 @@ def news_add(request):
             return response
         else:
             if form.errors:
-                raise Exception(form.errors)
                 for field in form:
                     messages.error(request, field.errors)
 
@@ -156,7 +155,6 @@ def comment_post(request, news_id):
             messages.success(request, 'Комментарий опубликован')
         else:
             if form.errors:
-                raise Exception(form.errors)
                 for field in form:
                     messages.error(request, field.errors)
 
