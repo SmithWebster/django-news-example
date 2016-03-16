@@ -1,0 +1,107 @@
+{% extends "layouts/main.html" %}
+
+{% block title %}Новость - {{ newsItem.title }}{% endblock %}
+
+{% block content %}
+{% if not newsItem %}
+    <div>Новость не найдена. Возможно она была удалена или не существует.</div>
+    <div>
+        <a href="{% url 'news-list' %}">Вернуться...</a>
+    </div>
+{% else %}
+<h1>{{ newsItem.title }}</h1>
+
+<div>
+    <div>Автор: {{ newsItem.author }}</div>
+    <div>Дата создания: {{ newsItem.created_at }}</div>
+</div>
+
+<div>
+    <a href="{% url 'news-list' %}">Вернуться...</a>
+</div>
+<br />
+
+<div>
+{% autoescape off %}
+    {{ newsItem.content }}
+{% endautoescape %}
+</div>
+
+<br />
+
+<h4>Комментарии</h4>
+
+{% if messages %}
+<div>
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div>
+    <form name="commentAddForm" method="post" action="{% url 'post-comment' newsItem.id %}">
+        {% if not author %}
+        <div>
+            <input type="text" name="first_name" placeholder="Имя" required />
+            <input type="text" name="last_name" placeholder="Фамилия" required />
+            <input type="text" name="surename" placeholder="Отчество" />
+        </div>
+        <br />
+        <div>
+            <input type="text" name="email" placeholder="Эл. почта" />
+            <input type="text" name="site" placeholder="Сайт" />
+        </div>
+        <br />
+        {% else %}
+        <div>Автор идентифицирован</div>
+        <input type="hidden" name="first_name" value="{{ author.first_name }}" />
+        <input type="hidden" name="last_name" value="{{ author.last_name }}" />
+        <input type="hidden" name="surename" value="{{ author.surename }}" />
+        <input type="hidden" name="email" value="{{ author.email }}" />
+        <input type="hidden" name="site" value="{{ author.site }}" />
+        {% endif %}
+
+        <div>
+            <textarea
+                name="comment"
+                placeholder="Введите сообщение"
+                rows=5
+                cols=56
+                required
+                ></textarea>
+        </div>
+        <br />
+        <div>
+            <button>Оставить комментарий</button>
+        </div>
+
+        {% csrf_token %}
+    </form>
+</div>
+
+{% with newsItem.getComments as comments %}
+
+{% if not comments %}
+<div>Комментариев пока нет</div>
+{% else %}
+
+{% for c in comments %}
+<div class="comment-item">
+    <div>
+        <div>Автор: {{ c.author }}</div>
+        <div>{{ c.created_at }}</div>
+    </div>
+    <div>{{ c.comment }}</div>
+</div>
+<hr />
+{% endfor %}
+
+{% endif %}
+
+{% endwith %}
+{% endif %}
+
+{% endblock %}

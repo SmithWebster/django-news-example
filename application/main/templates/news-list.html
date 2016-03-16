@@ -1,0 +1,64 @@
+{% extends "layouts/main.html" %}
+
+{% block title %}Новости{% endblock %}
+
+{% block content %}
+<h1>Новости</h1>
+
+<div>
+    <button onclick="window.location.href = '{% url 'news-add' %}'">Добавить новость</button>
+</div>
+
+<br />
+
+{% if paginator.count %}
+<div class="news-list">
+
+    {% for n in news %}
+    <div class="news-item">
+        <div class="title">
+            <h4><a href="{% url 'news-view' n.id %}">{{ n.title }}</a></h4>
+            <div>
+                <span>Создано: {{ n.created_at }}</span>
+            </div>
+            <div>
+                <span>Автор: {{ n.author }}</span>
+            </div>
+        </div>
+
+        {% autoescape off %}
+        <div class="shor-text">{{ n.content | truncatechars:50 }}</div>
+        {% endautoescape %}
+
+        <div>
+            <a href="{% url 'news-view' n.id %}">Подробнее...</a>
+        </div>
+        <hr />
+    </div>
+    {% endfor %}
+
+</div>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if news.has_previous %}
+        <a href="?page={{ news.previous_page_number }}">Назад</a>
+        {% endif %}
+
+        <span class="current">
+            Страница {{ news.number }} из {{ news.paginator.num_pages }}.
+        </span>
+
+        {% if news.has_next %}
+        <a href="?page={{ news.next_page_number }}">Далее</a>
+        {% endif %}
+    </span>
+</div>
+
+{% else %}
+
+<div>Новостей пока нет</div>
+
+{% endif %}
+
+{% endblock %}

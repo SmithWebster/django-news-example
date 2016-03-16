@@ -1,0 +1,66 @@
+{% extends "layouts/main.html" %}
+
+{% block title %}Опубликовать новость{% endblock %}
+
+{% block content %}
+<h1>Опубликовать новость</h1>
+
+<div>
+    <a href="{% url 'news-list' %}">Вернуться...</a>
+</div>
+<br />
+
+{% if messages %}
+<div>
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<form name="newsAddForm" method="post" action="{% url 'news-add' %}">
+    {% if not author %}
+    <div>
+        <input type="text" name="first_name" placeholder="Имя" required />
+        <input type="text" name="last_name" placeholder="Фамилия" required />
+        <input type="text" name="surename" placeholder="Отчество" />
+    </div>
+    <br />
+    <div>
+        <input type="text" name="email" placeholder="Эл. почта" />
+        <input type="text" name="site" placeholder="Сайт" />
+    </div>
+    <br />
+    {% else %}
+    <div>Автор идентифицирован</div>
+    <input type="hidden" name="first_name" value="{{ author.first_name }}" />
+    <input type="hidden" name="last_name" value="{{ author.last_name }}" />
+    <input type="hidden" name="surename" value="{{ author.surename }}" />
+    <input type="hidden" name="email" value="{{ author.email }}" />
+    <input type="hidden" name="site" value="{{ author.site }}" />
+    {% endif %}
+
+    <br />
+    <div>
+        <input type="text" name="title" placeholder="Заголовок" />
+    </div>
+    <br />
+    <div>
+        <textarea
+            name="content"
+            placeholder="Введите текст"
+            rows=5
+            cols=56
+            required
+            ></textarea>
+    </div>
+    <br />
+    <div>
+        <button>Оставить комментарий</button>
+    </div>
+
+    {% csrf_token %}
+</form>
+{% endblock %}
